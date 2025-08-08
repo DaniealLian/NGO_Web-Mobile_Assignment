@@ -1,12 +1,5 @@
-wwwroot\css\app.css
-wwwroot\css\pager.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
-wwwroot\js\app.js
-wwwroot\js\jquery.min.js
-wwwroot\js\jquery.unobtrusive-ajax.min.js
-wwwroot\js\jquery.validate.min.js
-wwwroot\js\jquery.validate.unobtrusive.min.js
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -68,6 +61,17 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\css\app.css
+wwwroot\css\pager.css
+wwwroot\js\app.js
+wwwroot\js\jquery.min.js
+wwwroot\js\jquery.unobtrusive-ajax.min.js
+wwwroot\js\jquery.validate.min.js
+wwwroot\js\jquery.validate.unobtrusive.min.js
+wwwroot\events\0b37ba674352429daa29d7ae44cc9e43.jpg
+wwwroot\events\5d3c4ad2d5f34fd08b4238f896422111.jpg
+wwwroot\events\fe24bac7f8fa4362b18e1ba3900a6f4f.jpg
+wwwroot\events\bf1ec28c5a874c479e9bb98aafa8f345.jpg
 C:\Users\User\Documents\Web & Mobile\Assignment\NGO_Web_Demo\wwwroot\css\site.css
 C:\Users\User\Documents\Web & Mobile\Assignment\NGO_Web_Demo\wwwroot\favicon.ico
 C:\Users\User\Documents\Web & Mobile\Assignment\NGO_Web_Demo\wwwroot\js\site.js

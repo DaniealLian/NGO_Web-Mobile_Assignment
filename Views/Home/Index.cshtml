@@ -2,7 +2,18 @@
     ViewBag.Title = "Home | Index";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<form class="form" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label>Photo</label>
+    <label class="upload">
+        <input type="file" name="photo" accept="image/jpeg,image/png" hidden>
+        <img src="/images/photo.jpg">
+    </label>
+    @Html.ValidationMessage("photo")
+
+    <section>
+        <button>Upload</button>
+        <button type="reset">Reset</button>
+    </section>
+</form>

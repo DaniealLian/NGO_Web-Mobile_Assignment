@@ -11,7 +11,7 @@ public class EventInsertVM
 {
     [StringLength(4)]
     [RegularExpression(@"P\d{3}", ErrorMessage = "Invalid {0} format.")]
-    [Remote("CheckId", "Product", ErrorMessage = "Duplicated {0}.")]
+    [Remote("CheckId", "NGO_Event_", ErrorMessage = "Duplicated {0}.")]
     public string Event_Id { get; set; }
 
     [StringLength(100)]

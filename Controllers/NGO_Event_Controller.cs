@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NGO_Web_Demo;
 using NGO_Web_Demo.Models;
+using Demo.Models; // Added for Event model
 
 namespace NGO_Web_Demo.Controllers;
 
@@ -16,14 +17,14 @@ public class NGO_Event_Controller : Controller
         this.hp = hp;
     }
 
-    // GET: Product/Index
-    public IActionResult Index()
+    // GET: NGO_Event/Index
+    public IActionResult Event_Index()
     {
-        var model = db.Events;
+        var model = db.Events; // Added ToList() to ensure data is loaded
         return View(model);
     }
 
-    // GET: Product/CheckId
+    // GET: NGO_Event/CheckId
     public bool CheckId(string Event_Id)
     {
         return !db.Events.Any(e => e.EventID == Event_Id);
@@ -31,42 +32,60 @@ public class NGO_Event_Controller : Controller
 
     private string NextId()
     {
+        //var maxEvent = db.Events.OrderByDescending(e => e.EventID).FirstOrDefault();
+        //if (maxEvent == null)
+        //{
+        //    return "E001";
+        //}
+
         string max = db.Events.Max(e => e.EventID) ?? "E000";
         int n = int.Parse(max[1..]);
         return (n + 1).ToString("'E'000");
     }
 
-    // GET: Product/Insert
-    public IActionResult Insert()
+    // GET: NGO_Event/Insert
+    public IActionResult Event_Insert()
     {
         var vm = new EventInsertVM
         {
             Event_Id = NextId(),
-            Event_Title = "To be completed",
+            Event_Title = "",
+            Event_Date = DateTime.Today.AddDays(1), // Default to tomorrow
+            Event_Location = "",
+            Event_Description = ""
+
         };
 
         return View(vm);
     }
 
-    // POST: Product/Insert
+    // POST: NGO_Event/Insert
     [HttpPost]
-    public IActionResult Insert(EventInsertVM vm)
+    public IActionResult Event_Insert(EventInsertVM vm)
     {
-        if (ModelState.IsValid("Id") && db.Events.Any(e => e.EventID == vm.Event_Id))
+        // Check for duplicate ID
+        if (ModelState.IsValid("Event_Id") && db.Events.Any(e => e.EventID == vm.Event_Id))
         {
-            ModelState.AddModelError("Id", "Duplicated Id.");
+            ModelState.AddModelError("Event_Id", "Duplicated Event ID.");
         }
 
-        if (ModelState.IsValid("Photo"))
+        // Validate photo if provided
+        if (vm.Event_Photo != null && ModelState.IsValid("Event_Photo"))
         {
-
-            var e = hp.ValidatePhoto(vm.Event_Photo);
-            if (e != "") ModelState.AddModelError("Photo", e);
-
+            var error = hp.ValidatePhoto(vm.Event_Photo);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ModelState.AddModelError("Event_Photo", error);
+            }
         }
 
         if (ModelState.IsValid)
         {
+            string? photoUrl = null;
+            if (vm.Event_Photo != null)
+            {
+                photoUrl = hp.SavePhoto(vm.Event_Photo, "events");
+            }
 
             db.Events.Add(new()
             {
@@ -74,24 +93,31 @@ public class NGO_Event_Controller : Controller
                 EventTitle = vm.Event_Title,
                 EventDate = vm.Event_Date,
                 EventLocation = vm.Event_Location,
+                EventDescription = vm.Event_Description,
                 EventPhotoURL = hp.SavePhoto(vm.Event_Photo, "events"),
             });
+
             db.SaveChanges();
 
-            TempData["Info"] = "Product inserted.";
-            return RedirectToAction("Index");
+            TempData["Info"] = "Event inserted successfully.";
+            return RedirectToAction("Event_Index");
         }
-
-        return View();
+        else if (ModelState.IsValid!)
+        {
+            TempData["Info"] = "Event inserted unsuccessfully.";
+            return RedirectToAction("Event_Index");
+        }
+        return View(vm);
     }
 
-    // GET: Product/Update
-    public IActionResult Update(string? id)
+    // GET: NGO_Event/Update
+    public IActionResult Even_Update(string? id)
     {
         var e = db.Events.Find(id);
 
         if (e == null)
         {
+            TempData["Info"] = "Event not found.";
             return RedirectToAction("Index");
         }
 
@@ -103,51 +129,64 @@ public class NGO_Event_Controller : Controller
             Event_Location = e.EventLocation,
             Event_Description = e.EventDescription,
             Event_PhotoURL = e.EventPhotoURL,
-            Event_Photo = null, // Initialize to null for the form
+            Event_Photo = null,
         };
 
         return View(vm);
     }
 
-    // POST: Product/Update
+    // POST: NGO_Event/Update
     [HttpPost]
-    public IActionResult Update(EventUpdateVM vm)
+    public IActionResult Event_Update(EventUpdateVM vm)
     {
         var e = db.Events.Find(vm.Event_Id);
 
         if (e == null)
         {
+            TempData["Info"] = "Event not found.";
             return RedirectToAction("Index");
         }
+
+        // Validate photo if provided
         if (vm.Event_Photo != null)
         {
-            var p = hp.ValidatePhoto(vm.Event_Photo);
-            if (p != "") ModelState.AddModelError("Photo", p);
-
+            var error = hp.ValidatePhoto(vm.Event_Photo);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ModelState.AddModelError("Event_Photo", error);
+            }
         }
 
         if (ModelState.IsValid)
         {
-
-            e.EventID = vm.Event_Id;
             e.EventTitle = vm.Event_Title;
+            e.EventDate = vm.Event_Date;
+            e.EventLocation = vm.Event_Location;
+            e.EventDescription = vm.Event_Description;
 
+            // Handle photo update
             if (vm.Event_Photo != null)
             {
-                hp.DeletePhoto(e.EventPhotoURL, "events");
+                // Delete old photo if exists
+                if (!string.IsNullOrEmpty(e.EventPhotoURL))
+                {
+                    hp.DeletePhoto(e.EventPhotoURL, "events");
+                }
                 e.EventPhotoURL = hp.SavePhoto(vm.Event_Photo, "events");
             }
+
             db.SaveChanges();
 
-            TempData["Info"] = "Product updated.";
+            TempData["Info"] = "Event updated successfully.";
             return RedirectToAction("Index");
         }
 
+        // Reload the photo URL for display
         vm.Event_PhotoURL = e.EventPhotoURL;
         return View(vm);
     }
 
-    // POST: Product/Delete
+    // POST: NGO_Event/Delete
     [HttpPost]
     public IActionResult Delete(string? id)
     {
@@ -155,12 +194,20 @@ public class NGO_Event_Controller : Controller
 
         if (e != null)
         {
-            // TODO
-            hp.DeletePhoto(e.EventPhotoURL, "products");
+            // Delete associated photo
+            if (!string.IsNullOrEmpty(e.EventPhotoURL))
+            {
+                hp.DeletePhoto(e.EventPhotoURL, "events"); // Fixed folder name
+            }
+
             db.Events.Remove(e);
             db.SaveChanges();
 
-            TempData["Info"] = "Product deleted.";
+            TempData["Info"] = "Event deleted successfully.";
+        }
+        else
+        {
+            TempData["Info"] = "Event not found.";
         }
 
         return RedirectToAction("Index");

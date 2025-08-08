@@ -1,0 +1,42 @@
+﻿@model EventUpdateVM
+
+@{
+    ViewBag.Title = "Event | Update";
+}
+
+<form class="form" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="Event_Id"></label>
+    <b>@Model.Event_Id</b>
+    <br>
+
+    <label asp-for="Event_Title"></label>
+    <input asp-for="Event_Title" autofocus>
+    <span asp-validation-for="Event_Title"></span>
+
+    <label asp-for="Event_Date"></label>
+    <input asp-for="Event_Date" type="date">
+    <span asp-validation-for="Event_Date"></span>
+
+
+	<label asp-for="Event_Location"></label>
+	<input asp-for="Event_Location">
+	<span asp-validation-for="Event_Location"></span>
+
+	<label asp-for="Event_Description"></label>
+	<textarea asp-for="Event_Description" rows="5"></textarea>
+	<span asp-validation-for="Event_Description"></span>
+
+    <label asp-for="Event_Photo"></label>
+    <label class="upload">
+        <input asp-for="Event_Photo" accept="image/jpeg,image/png" hidden>
+        <img src="/NGO_Event_/@Model.Event_Photo">
+    </label>
+    <span asp-validation-for="Event_Photo"></span>
+
+    <section>
+        <button>Submit</button>
+        <button type="reset">Reset</button>
+    </section>
+</form>

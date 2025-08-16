@@ -203,13 +203,13 @@ label > * {
     vertical-align: text-top;
 }
 
-.form {
+/*.form {
     display: grid;
     grid: auto / auto auto auto;
     gap: 5px;
     place-content: start;
     place-items: center start;
-}
+}*/
 
 .form > label:not(:has(*)) {
     background: #ccc;
